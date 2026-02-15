@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analýza úvěru ČSOB</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Crimson+Pro:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,34 +11,448 @@
             box-sizing: border-box;
         }
 
-        :root {
-            --primary: #0A3D62;
-            --accent: #E74C3C;
-            --success: #27AE60;
-            --background: #F8F9FA;
-            --surface: #FFFFFF;
-            --text: #2C3E50;
-            --text-muted: #7F8C8D;
-            --border: #E1E8ED;
-            --shadow: rgba(10, 61, 98, 0.08);
-        }
-
         body {
-            font-family: 'Crimson Pro', serif;
-            background: linear-gradient(135deg, #F8F9FA 0%, #E8EEF2 100%);
-            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #2c3e50;
             min-height: 100vh;
-            padding: 40px 20px;
-            position: relative;
-            overflow-x: hidden;
+            padding: 20px;
         }
 
-        body::before {
-            content: '';
-            position: fixed;
-            top: -50%;
-            right: -20%;
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(231, 76, 60, 0.05) 0%, transparent 70%);
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #0a3d62;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+        }
+
+        .controls {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .loan-info {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .loan-info h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+
+        .loan-info .loan-details {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0a3d62;
+        }
+
+        .loan-info .loan-details .amount {
+            color: #e74c3c;
+        }
+
+        .custom-loan {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            border: 2px dashed #e1e8ed;
+        }
+
+        .custom-loan h3 {
+            font-size: 1rem;
+            text-transform: uppercase;
+            color: #e74c3c;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .slider-group {
+            margin-bottom: 25px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .slider-label span {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: #7f8c8d;
+        }
+
+        .slider-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #e74c3c;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
+            background: #e74c3c;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #e74c3c;
+            cursor: pointer;
+            border: none;
+        }
+
+        .summary-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            flex: 1 1 calc(33.333% - 10px);
+            min-width: 200px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .summary-card h4 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+
+        .summary-card .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .summary-card.principal {
+            border: 2px solid #0a3d62;
+        }
+
+        .summary-card.principal .value {
+            color: #0a3d62;
+        }
+
+        .summary-card.interest {
+            border: 2px solid #e74c3c;
+        }
+
+        .summary-card.interest .value {
+            color: #e74c3c;
+        }
+
+        .summary-card.total {
+            border: 2px solid #27ae60;
+        }
+
+        .summary-card.total .value {
+            color: #27ae60;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #0a3d62;
+        }
+
+        thead th {
+            padding: 15px;
+            text-align: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        tbody td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        tbody td:first-child {
+            font-weight: 700;
+            color: #0a3d62;
+            text-align: left;
+        }
+
+        .amount-cell {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .interest-cell {
+            font-weight: 600;
+            color: #e74c3c;
+        }
+
+        .amount-cell.zero, .interest-cell.zero {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .controls, .table-container {
+                padding: 20px;
+            }
+
+            .summary-card {
+                flex: 1 1 100%;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            thead th, tbody td {
+                padding: 10px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Analýza úvěru</h1>
+            <div class="subtitle">ČSOB – Porovnání splátek</div>
+        </header>
+
+        <div class="controls">
+            <div class="loan-info">
+                <h3>Vaše varianta úvěru</h3>
+                <div class="loan-details">
+                    <span class="amount" id="loanSummary">250 mil. Kč</span> / <span id="durationSummary">15 let</span>
+                </div>
+            </div>
+
+            <div class="custom-loan">
+                <h3>Nastavení</h3>
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Výše úvěru</span>
+                        <span class="slider-value" id="amountValue">250 mil. Kč</span>
+                    </div>
+                    <input type="range" id="amountSlider" min="50" max="500" value="250" step="10">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Délka úvěru</span>
+                        <span class="slider-value" id="yearsValue">15 let</span>
+                    </div>
+                    <input type="range" id="yearsSlider" min="5" max="30" value="15" step="1">
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-cards">
+            <div class="summary-card principal">
+                <h4>Jistina úvěru</h4>
+                <div class="value" id="principalTotal">250.00 mil. Kč</div>
+            </div>
+            <div class="summary-card interest">
+                <h4>Celkové úroky</h4>
+                <div class="value" id="interestTotal">0.00 mil. Kč</div>
+            </div>
+            <div class="summary-card total">
+                <h4>Celkem zaplaceno</h4>
+                <div class="value" id="grandTotal">250.00 mil. Kč</div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rok</th>
+                        <th>Roční splátka úvěru</th>
+                        <th>Z toho úroky</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        var loanData = {"years": [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2045, 2046], "data": {"100_20": [7.179338888888889, 9.336144444444445, 9.117011111111111, 8.87381111111111, 8.642644444444445, 8.411477777777778, 8.18981111111111, 7.949144444444444, 7.717977777777778, 7.486811111111111, 7.262611111111111, 7.024477777777778, 7.377596527777778, 7.117534027777777, 6.861733333333333, 6.597409027777778, 6.337346527777778, 6.077284027777778, 5.818633333333334, 5.560469027777778, 5.304471527777778], "100_15": [8.357528472222223, 11.03120902777778, 10.72495277777778, 10.39550069444445, 10.07764652777778, 9.759792361111112, 9.450052777777778, 9.124084027777778, 8.806229861111111, 8.488375694444445, 8.175152777777777, 7.852667361111111, 7.534813194444444, 7.216959027777778, 7.49176875, 2.6154375, 0, 0, 0, 0, 0], "100_10": [10.32117777777778, 13.85631666666667, 13.40485555555556, 12.93165, 12.46931666666667, 12.00698333333333, 11.55045555555556, 12.2508875, 11.7307625, 11.2106375, 3.6216125, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "200_20": [14.35867777777778, 18.67228888888889, 18.23402222222222, 17.74762222222222, 17.28528888888889, 16.82295555555556, 16.37962222222222, 15.89828888888889, 15.43595555555556, 14.97362222222222, 14.52522222222222, 14.04895555555556, 14.75519305555556, 14.23506805555555, 13.72346666666667, 13.19481805555556, 12.67469305555556, 12.15456805555556, 11.63726666666667, 11.12093805555556, 10.60894305555555], "200_15": [16.71505694444445, 22.06241805555555, 21.44990555555556, 20.79100138888889, 20.15529305555556, 19.51958472222222, 18.90010555555556, 18.24816805555556, 17.61245972222222, 16.97675138888889, 16.35030555555555, 15.70533472222222, 15.06962638888889, 14.43391805555556, 14.9835375, 5.230875, 0, 0, 0, 0, 0], "200_10": [20.64235555555555, 27.71263333333333, 26.80971111111111, 25.8633, 24.93863333333333, 24.01396666666667, 23.10091111111111, 24.501775, 23.461525, 22.421275, 7.243225000000001, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "300_20": [21.53801666666667, 28.00843333333333, 27.35103333333333, 26.62143333333334, 25.92793333333334, 25.23443333333334, 24.56943333333333, 23.84743333333333, 23.15393333333333, 22.46043333333333, 21.78783333333333, 21.07343333333333, 22.13278958333333, 21.35260208333333, 20.5852, 19.79222708333333, 19.01203958333333, 18.23185208333334, 17.4559, 16.68140708333333, 15.91341458333333], "300_15": [25.07258541666667, 33.09362708333333, 32.17485833333333, 31.18650208333333, 30.23293958333333, 29.27937708333333, 28.35015833333333, 27.37225208333333, 26.41868958333333, 25.46512708333333, 24.52545833333333, 23.55800208333333, 22.60443958333333, 21.65087708333333, 22.47530625, 7.8463125, 0, 0, 0, 0, 0], "300_10": [30.96353333333333, 41.56894999999999, 40.21456666666666, 38.79495, 37.40795, 36.02095, 34.65136666666667, 36.7526625, 35.1922875, 33.6319125, 10.8648375, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}};
+
+        var INTEREST_RATE = 0.202;
+        var customAmount = 250;
+        var customYears = 15;
+
+        function calculateCustomPayment(year) {
+            var yearIndex = loanData.years.indexOf(year);
+            if (yearIndex === -1) return 0;
+
+            var amounts = [100, 200, 300];
+            var durations = [10, 15, 20];
+
+            var amountIdx = 0;
+            if (customAmount >= 300) amountIdx = 2;
+            else if (customAmount >= 200) amountIdx = 1;
+
+            var durationIdx = 0;
+            if (customYears >= 20) durationIdx = 2;
+            else if (customYears >= 15) durationIdx = 1;
+
+            var baseAmount = amounts[amountIdx];
+            var baseDuration = durations[durationIdx];
+
+            var key = baseAmount + '_' + baseDuration;
+            var basePayment = loanData.data[key][yearIndex];
+
+            var amountRatio = customAmount / baseAmount;
+            var durationRatio = baseDuration / customYears;
+
+            var payment = basePayment * amountRatio * durationRatio;
+
+            var startYear = 2026;
+            var endYear = startYear + customYears;
+            if (year >= endYear) {
+                return 0;
+            }
+
+            return payment;
+        }
+
+        function calculateInterest(payment) {
+            if (payment === 0) return 0;
+            return payment * INTEREST_RATE;
+        }
+
+        function formatCurrency(value) {
+            if (value === 0 || isNaN(value)) {
+                return 'Splaceno';
+            }
+            return value.toFixed(2) + ' mil. Kč';
+        }
+
+        function updateTable() {
+            var tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            var totalPayments = 0;
+            var totalInterest = 0;
+
+            for (var i = 0; i < loanData.years.length; i++) {
+                var year = loanData.years[i];
+                var row = document.createElement('tr');
+                
+                var yearCell = document.createElement('td');
+                yearCell.textContent = year;
+                row.appendChild(yearCell);
+
+                var payment = calculateCustomPayment(year);
+                var interest = calculateInterest(payment);
+
+                totalPayments += payment;
+                totalInterest += interest;
+
+                var paymentCell = document.createElement('td');
+                paymentCell.className = payment === 0 ? 'amount-cell zero' : 'amount-cell';
+                paymentCell.textContent = formatCurrency(payment);
+                row.appendChild(paymentCell);
+
+                var interestCell = document.createElement('td');
+                interestCell.className = interest === 0 ? 'interest-cell zero' : 'interest-cell';
+                interestCell.textContent = formatCurrency(interest);
+                row.appendChild(interestCell);
+
+                tbody.appendChild(row);
+            }
+
+            document.getElementById('principalTotal').textContent = customAmount.toFixed(2) + ' mil. Kč';
+            document.getElementById('interestTotal').textContent = totalInterest.toFixed(2) + ' mil. Kč';
+            document.getElementById('grandTotal').textContent = totalPayments.toFixed(2) + ' mil. Kč';
+        }
+
+        function updateLoanSummary() {
+            document.getElementById('loanSummary').textContent = customAmount + ' mil. Kč';
+            document.getElementById('durationSummary').textContent = customYears + ' let';
+        }
+
+        var amountSlider = document.getElementById('amountSlider');
+        var amountValue = document.getElementById('amountValue');
+        var yearsSlider = document.getElementById('yearsSlider');
+        var yearsValue = document.getElementById('yearsValue');
+
+        amountSlider.oninput = function() {
+            customAmount = parseInt(this.value);
+            amountValue.textContent = customAmount + ' mil. Kč';
+            updateLoanSummary();
+            updateTable();
+        };
+
+        yearsSlider.oninput = function() {
+            customYears = parseInt(this.value);
+            yearsValue.textContent = customYears + ' let';
+            updateLoanSummary();
+            updateTable();
+        };
+
+        updateLoanSummary();
+        updateTable();
+    </script>
+</body>
+</html>
