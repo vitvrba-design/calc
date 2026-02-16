@@ -1,446 +1,361 @@
+```html
 <!DOCTYPE html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ČSOB – Scénáře financování</title>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>Scénáře financování ČSOB</title>
     <style>
-        :root {
-            --bg:       #1c2333;
-            --panel:    #242d40;
-            --card:     #2d3850;
-            --border:   #3a4560;
-            --border2:  #4a5570;
-            --text:     #e8ecf4;
-            --sub:      #a0aabf;
-            --muted:    #6b7899;
-            --blue:     #4d9fff;
-            --green:    #3ecf8e;
-            --yellow:   #fbbf24;
-            --red:      #f87171;
-            --row-hover:#313d55;
-        }
-
-        * { margin:0; padding:0; box-sizing:border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Sora', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #2c3e50;
             min-height: 100vh;
-            padding: 32px 24px 64px;
+            padding: 20px;
         }
 
-        .wrap { max-width: 1440px; margin: 0 auto; }
+        .container { max-width: 1400px; margin: 0 auto; }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 36px;
-        }
+        header { text-align: center; margin-bottom: 40px; }
 
-        .header-left h1 {
-            font-size: 1.75rem;
+        h1 {
+            font-size: 2.5rem;
             font-weight: 700;
-            color: var(--text);
-            margin-bottom: 4px;
+            color: #0a3d62;
+            margin-bottom: 10px;
         }
 
-        .header-left p {
-            font-size: 0.85rem;
-            color: var(--sub);
-            font-weight: 300;
+        .subtitle { font-size: 1.2rem; color: #7f8c8d; }
+
+        .controls {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
         }
 
-        .header-badge {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 10px 16px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--sub);
-            text-align: right;
-            line-height: 1.7;
+        .slider-info {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
         }
 
-        .header-badge span { color: var(--blue); }
-
-        .slider-card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 28px 32px;
-            margin-bottom: 24px;
+        .slider-info h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: #7f8c8d;
+            margin-bottom: 10px;
         }
 
-        .slider-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+        .slider-info .big-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #e74c3c;
         }
 
-        .slider-top label {
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: var(--sub);
-            letter-spacing: 0.04em;
-        }
-
-        .slider-top .big-val {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 2.4rem;
-            font-weight: 600;
-            color: var(--yellow);
-            line-height: 1;
-        }
-
-        .slider-top .big-val small {
-            font-size: 1rem;
-            color: var(--sub);
+        .slider-info .big-number span {
+            font-size: 1.1rem;
+            color: #7f8c8d;
             font-weight: 400;
             margin-left: 6px;
         }
 
-        .track-wrap {
-            position: relative;
-            height: 8px;
-            background: var(--card);
-            border-radius: 4px;
+        .slider-wrap {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            border: 2px dashed #e1e8ed;
+        }
+
+        .slider-wrap h3 {
+            font-size: 1rem;
+            text-transform: uppercase;
+            color: #e74c3c;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .slider-group { margin-bottom: 10px; }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
             margin-bottom: 10px;
         }
 
-        .track-fill {
-            position: absolute;
-            left: 0; top: 0; height: 100%;
-            background: linear-gradient(90deg, var(--blue), var(--yellow));
-            border-radius: 4px;
-            pointer-events: none;
-            transition: width 0.04s;
-        }
-
-        input[type=range] {
-            position: absolute;
-            top: -10px; left: 0;
-            width: 100%; height: 28px;
-            -webkit-appearance: none;
-            background: transparent;
-            cursor: pointer;
-            outline: none;
-        }
-
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 24px; height: 24px;
-            background: var(--yellow);
-            border: 3px solid var(--panel);
-            border-radius: 50%;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-        }
-
-        input[type=range]::-moz-range-thumb {
-            width: 24px; height: 24px;
-            background: var(--yellow);
-            border: 3px solid var(--panel);
-            border-radius: 50%;
-        }
-
-        .track-labels {
-            display: flex;
-            justify-content: space-between;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.65rem;
-            color: var(--muted);
-            margin-top: 4px;
-        }
-
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-bottom: 28px;
-        }
-
-        .stat-card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px 22px;
-        }
-
-        .stat-card .s-label {
-            font-size: 0.7rem;
-            color: var(--muted);
-            font-weight: 500;
-            margin-bottom: 8px;
+        .slider-label span {
+            font-size: 0.85rem;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
+            color: #7f8c8d;
         }
 
-        .stat-card .s-val {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.7rem;
-            font-weight: 600;
-            line-height: 1;
-            margin-bottom: 4px;
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+            background: #e1e8ed;
         }
 
-        .stat-card .s-sub {
-            font-size: 0.72rem;
-            color: var(--muted);
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #e74c3c;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(231,76,60,0.4);
         }
 
-        .c-blue  { color: var(--blue); }
-        .c-green { color: var(--green); }
-        .c-yellow{ color: var(--yellow); }
-        .c-red   { color: var(--red); }
-
-        .table-card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            overflow: hidden;
+        input[type="range"]::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #e74c3c;
+            cursor: pointer;
+            border: none;
         }
 
-        .table-toolbar {
+        .slider-ticks {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 18px 24px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .table-toolbar h2 {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .table-toolbar span {
-            font-family: 'JetBrains Mono', monospace;
             font-size: 0.7rem;
-            color: var(--muted);
+            color: #bdc3c7;
+            margin-top: 6px;
         }
 
-        .table-scroll { overflow-x: auto; }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 600px;
+        .summary-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
         }
+
+        .summary-card {
+            flex: 1 1 calc(25% - 12px);
+            min-width: 160px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .summary-card h4 {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .summary-card .value {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .summary-card.c1 { border: 2px solid #0a3d62; }
+        .summary-card.c1 .value { color: #0a3d62; }
+        .summary-card.c2 { border: 2px solid #27ae60; }
+        .summary-card.c2 .value { color: #27ae60; }
+        .summary-card.c3 { border: 2px solid #e67e22; }
+        .summary-card.c3 .value { color: #e67e22; }
+        .summary-card.c4 { border: 2px solid #e74c3c; }
+        .summary-card.c4 .value { color: #e74c3c; }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        .table-container h2 {
+            font-size: 1rem;
+            text-transform: uppercase;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+
+        thead { background: #0a3d62; }
 
         thead th {
-            background: var(--card);
-            padding: 0;
-            border-bottom: 2px solid var(--border);
+            padding: 14px 12px;
+            text-align: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.82rem;
+            text-transform: uppercase;
             vertical-align: bottom;
             white-space: nowrap;
         }
 
         thead th:first-child {
-            padding: 14px 20px;
             text-align: left;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.65rem;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            border-right: 1px solid var(--border);
+            border-radius: 0;
             min-width: 72px;
             position: sticky;
             left: 0;
             z-index: 2;
+            background: #0a3d62;
         }
 
-        .col-inner {
-            padding: 14px 16px 12px;
-            border-left: 1px solid var(--border);
-            text-align: center;
-        }
+        thead th:last-child { border-radius: 0; }
 
-        .col-inner.is-best {
-            background: rgba(251,191,36,0.06);
-            border-left: 2px solid var(--yellow);
-        }
-
-        .col-name {
+        .th-amount {
             display: block;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text);
+            font-size: 1.05rem;
+            font-weight: 700;
             margin-bottom: 2px;
         }
 
-        .col-dur {
+        .th-dur {
             display: block;
-            font-size: 0.7rem;
-            color: var(--sub);
-            margin-bottom: 8px;
+            font-size: 0.72rem;
+            opacity: 0.8;
+            margin-bottom: 4px;
         }
 
-        .col-tag {
-            display: inline-block;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.62rem;
-            padding: 2px 7px;
-            border-radius: 4px;
-            margin-bottom: 2px;
-        }
+        thead th.col-best { background: #0d4f80; }
+        thead th.col-best:first-child { background: #0a3d62; }
 
-        .tag-max  { background: rgba(248,113,113,0.12); color: var(--red); }
-        .tag-int  { background: rgba(62,207,142,0.12);  color: var(--green); }
-        .tag-best { background: rgba(251,191,36,0.15);  color: var(--yellow); display:block; margin-bottom:6px; font-size:0.58rem; letter-spacing:0.06em; }
-
-        tbody tr {
-            border-bottom: 1px solid rgba(58,69,96,0.5);
-            transition: background 0.12s;
-        }
-
-        tbody tr:last-child { border-bottom: none; }
-        tbody tr:hover { background: var(--row-hover); }
-        tbody tr:hover td:first-child { background: var(--row-hover); }
+        tbody tr:hover { background: #f8f9fa; }
+        tbody tr:hover td:first-child { background: #f8f9fa; }
 
         tbody td {
-            padding: 11px 16px;
+            padding: 13px 12px;
             text-align: center;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            color: var(--sub);
-            border-left: 1px solid rgba(58,69,96,0.4);
+            border-bottom: 1px solid #e1e8ed;
+            font-size: 0.95rem;
         }
 
         tbody td:first-child {
+            font-weight: 700;
+            color: #0a3d62;
             text-align: left;
-            font-size: 0.78rem;
-            font-weight: 500;
-            color: var(--text);
-            border-left: none;
-            border-right: 1px solid var(--border);
-            background: var(--panel);
+            border-bottom: 1px solid #e1e8ed;
+            background: white;
             position: sticky;
             left: 0;
             z-index: 1;
-            padding: 11px 20px;
         }
 
-        td.is-best { border-left: 2px solid rgba(251,191,36,0.2) !important; background: rgba(251,191,36,0.03); }
+        tbody tr:last-child td { border-bottom: none; }
 
-        .v-normal { color: var(--sub); }
-        .v-high   { color: var(--red); font-weight: 600; }
-        .v-zero   { color: var(--border2); }
+        td.col-best { background: #f0f7ff; }
 
-        tbody tr.sum {
-            background: var(--card);
-            border-top: 2px solid var(--border);
-        }
+        .v-normal { color: #2c3e50; font-weight: 600; }
+        .v-high   { color: #e74c3c; font-weight: 700; }
+        .v-zero   { color: #e1e8ed; font-style: italic; font-weight: 400; }
 
-        tbody tr.sum td { padding: 10px 16px; font-size: 0.78rem; }
-
-        tbody tr.sum td:first-child {
-            background: var(--card);
-            font-family: 'Sora', sans-serif;
-            font-size: 0.68rem;
-            font-weight: 500;
-            color: var(--muted);
+        tr.sum-row { background: #f8f9fa; }
+        tr.sum-row td { padding: 11px 12px; font-size: 0.9rem; }
+        tr.sum-row td:first-child {
+            font-size: 0.72rem;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.5px;
+            color: #7f8c8d;
+            font-weight: 600;
+            background: #f8f9fa;
         }
+        tr.sum-row:hover td:first-child { background: #f8f9fa; }
+        tr.sum-row td.col-best { background: #e8f3ff; }
 
-        tbody tr.sum:hover { background: var(--card); }
-        tbody tr.sum:hover td:first-child { background: var(--card); }
+        .sum-total   { color: #0a3d62; font-weight: 700; }
+        .sum-uroky   { color: #e74c3c; font-weight: 700; }
+        .sum-jistina { color: #27ae60; font-weight: 700; }
+
+        .sum-divider td {
+            padding: 0;
+            height: 2px;
+            background: #e1e8ed;
+            border: none;
+        }
 
         .empty {
-            padding: 60px;
             text-align: center;
-            color: var(--muted);
-            font-size: 0.9rem;
+            padding: 50px;
+            color: #7f8c8d;
+            font-size: 1rem;
         }
 
         @media (max-width: 700px) {
-            body { padding: 20px 16px 48px; }
-            .header { flex-direction: column; gap: 12px; }
-            .header-badge { text-align: left; }
-            .stats-row { grid-template-columns: 1fr 1fr; }
-            .slider-card { padding: 20px; }
-            .big-val { font-size: 2rem !important; }
+            h1 { font-size: 1.8rem; }
+            .controls, .table-container { padding: 18px; }
+            .summary-card { flex: 1 1 calc(50% - 8px); }
+            thead th, tbody td { padding: 10px 6px; font-size: 0.82rem; }
         }
 
         @media (max-width: 420px) {
-            .stats-row { grid-template-columns: 1fr; }
+            .summary-card { flex: 1 1 100%; }
         }
     </style>
 </head>
 <body>
-<div class="wrap">
+<div class="container">
 
-    <div class="header">
-        <div class="header-left">
-            <h1>Scénáře financování</h1>
-            <p>Modelace úvěru ČSOB · CZK · 4,75 % p.a.</p>
+    <header>
+        <h1>Scénáře financování</h1>
+        <div class="subtitle">ČSOB – Modelace úvěru · CZK · 4,75 % p.a.</div>
+    </header>
+
+    <div class="controls">
+        <div class="slider-info">
+            <h3>Maximální roční dluhová služba</h3>
+            <div class="big-number" id="bigVal">20<span>mil. Kč / rok</span></div>
         </div>
-        <div class="header-badge">
-            Jistina <span>100 – 300 mil. Kč</span><br>
-            Splatnost <span>10 – 20 let</span><br>
-            Hodnoty v <span>mil. Kč</span>
+        <div class="slider-wrap">
+            <h3>Nastavení</h3>
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>Maximální DS / rok</span>
+                </div>
+                <input type="range" id="slider" min="5" max="50" value="20" step="0.5">
+                <div class="slider-ticks">
+                    <span>5M</span><span>10M</span><span>15M</span><span>20M</span><span>25M</span>
+                    <span>30M</span><span>35M</span><span>40M</span><span>45M</span><span>50M</span>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="slider-card">
-        <div class="slider-top">
-            <label>Maximální roční dluhová služba (DS/rok)</label>
-            <div class="big-val" id="bigVal">20<small>mil. Kč / rok</small></div>
+    <div class="summary-cards">
+        <div class="summary-card c1">
+            <h4>Počet variant</h4>
+            <div class="value" id="sCount">—</div>
         </div>
-        <div class="track-wrap">
-            <div class="track-fill" id="trackFill"></div>
-            <input type="range" id="slider" min="5" max="50" value="20" step="0.5">
+        <div class="summary-card c2">
+            <h4>Max. jistina</h4>
+            <div class="value" id="sAmt">—</div>
         </div>
-        <div class="track-labels">
-            <span>5</span><span>10</span><span>15</span><span>20</span><span>25</span>
-            <span>30</span><span>35</span><span>40</span><span>45</span><span>50</span>
+        <div class="summary-card c3">
+            <h4>Nejkratší splatnost</h4>
+            <div class="value" id="sDur">—</div>
         </div>
-    </div>
-
-    <div class="stats-row">
-        <div class="stat-card">
-            <div class="s-label">Počet variant</div>
-            <div class="s-val c-blue" id="sCount">—</div>
-            <div class="s-sub">splňuje podmínku</div>
-        </div>
-        <div class="stat-card">
-            <div class="s-label">Max. jistina</div>
-            <div class="s-val c-green" id="sAmt">—</div>
-            <div class="s-sub" id="sAmtSub">mil. Kč</div>
-        </div>
-        <div class="stat-card">
-            <div class="s-label">Nejkratší splatnost</div>
-            <div class="s-val c-yellow" id="sDur">—</div>
-            <div class="s-sub">let</div>
-        </div>
-        <div class="stat-card">
-            <div class="s-label">Min. celkové úroky</div>
-            <div class="s-val c-red" id="sInt">—</div>
-            <div class="s-sub">mil. Kč</div>
+        <div class="summary-card c4">
+            <h4>Min. celkové úroky</h4>
+            <div class="value" id="sInt">—</div>
         </div>
     </div>
 
-    <div class="table-card">
-        <div class="table-toolbar">
-            <h2>Přehled variant — roční splátky</h2>
-            <span id="toolbarInfo">—</span>
-        </div>
-        <div class="table-scroll">
-            <div id="tbl"></div>
-        </div>
+    <div class="table-container">
+        <h2 id="tableTitle">Přehled variant — roční splátky v mil. Kč</h2>
+        <div id="tbl"></div>
     </div>
 
 </div>
 <script>
-var D = {"100M_10":{"2026":{"ds":11.1212,"uroky":3.9212,"jistina":7.2},"2027":{"ds":13.8563,"uroky":4.2563,"jistina":9.6},"2028":{"ds":13.394,"uroky":3.794,"jistina":9.6},"2029":{"ds":12.9413,"uroky":3.3413,"jistina":9.6},"2030":{"ds":12.4693,"uroky":2.8693,"jistina":9.6},"2031":{"ds":12.007,"uroky":2.407,"jistina":9.6},"2032":{"ds":11.6655,"uroky":1.9655,"jistina":9.7},"2033":{"ds":12.2799,"uroky":1.4799,"jistina":10.8},"2034":{"ds":11.7498,"uroky":0.9498,"jistina":10.8},"2035":{"ds":11.2197,"uroky":0.4197,"jistina":10.8},"2036":{"ds":2.7221,"uroky":0.0221,"jistina":2.7}},"100M_15":{"2026":{"ds":8.9075,"uroky":3.9575,"jistina":4.95},"2027":{"ds":11.0312,"uroky":4.4312,"jistina":6.6},"2028":{"ds":10.7134,"uroky":4.1134,"jistina":6.6},"2029":{"ds":10.4062,"uroky":3.8062,"jistina":6.6},"2030":{"ds":10.0776,"uroky":3.4776,"jistina":6.6},"2031":{"ds":9.7598,"uroky":3.1598,"jistina":6.6},"2032":{"ds":9.4728,"uroky":2.8728,"jistina":6.6},"2033":{"ds":9.1732,"uroky":2.5732,"jistina":6.6},"2034":{"ds":8.8492,"uroky":2.2492,"jistina":6.6},"2035":{"ds":8.5253,"uroky":1.9253,"jistina":6.6},"2036":{"ds":8.2013,"uroky":1.6013,"jistina":6.6},"2037":{"ds":7.8774,"uroky":1.2774,"jistina":6.6},"2038":{"ds":7.5534,"uroky":0.9534,"jistina":6.6},"2039":{"ds":7.2295,"uroky":0.6295,"jistina":6.6},"2040":{"ds":7.597,"uroky":0.297,"jistina":7.3},"2041":{"ds":1.966,"uroky":0.016,"jistina":1.95}},"100M_20":{"2026":{"ds":7.5793,"uroky":3.9793,"jistina":3.6},"2027":{"ds":9.3361,"uroky":4.5361,"jistina":4.8},"2028":{"ds":9.105,"uroky":4.305,"jistina":4.8},"2029":{"ds":8.8852,"uroky":4.0852,"jistina":4.8},"2030":{"ds":8.6426,"uroky":3.8426,"jistina":4.8},"2031":{"ds":8.4115,"uroky":3.6115,"jistina":4.8},"2032":{"ds":8.2172,"uroky":3.4171,"jistina":4.8},"2033":{"ds":8.01,"uroky":3.21,"jistina":4.8},"2034":{"ds":7.7744,"uroky":2.9745,"jistina":4.8},"2035":{"ds":7.5389,"uroky":2.7388,"jistina":4.8},"2036":{"ds":7.3033,"uroky":2.5032,"jistina":4.8},"2037":{"ds":7.1177,"uroky":2.2677,"jistina":4.85},"2038":{"ds":7.4161,"uroky":2.0161,"jistina":5.4},"2039":{"ds":7.151,"uroky":1.751,"jistina":5.4},"2040":{"ds":6.886,"uroky":1.486,"jistina":5.4},"2041":{"ds":6.1709,"uroky":1.2209,"jistina":4.95},"2042":{"ds":6.3559,"uroky":0.9559,"jistina":5.4},"2043":{"ds":6.0908,"uroky":0.6908,"jistina":5.4},"2044":{"ds":5.8258,"uroky":0.4258,"jistina":5.4},"2045":{"ds":5.5607,"uroky":0.1607,"jistina":5.4},"2046":{"ds":0.8014,"uroky":0.0014,"jistina":0.8}},"200M_10":{"2026":{"ds":22.2424,"uroky":7.8424,"jistina":14.4},"2027":{"ds":27.7126,"uroky":8.5126,"jistina":19.2},"2028":{"ds":26.788,"uroky":7.588,"jistina":19.2},"2029":{"ds":25.8825,"uroky":6.6825,"jistina":19.2},"2030":{"ds":24.9386,"uroky":5.7386,"jistina":19.2},"2031":{"ds":24.014,"uroky":4.814,"jistina":19.2},"2032":{"ds":23.3311,"uroky":3.9311,"jistina":19.4},"2033":{"ds":24.5597,"uroky":2.9597,"jistina":21.6},"2034":{"ds":23.4995,"uroky":1.8995,"jistina":21.6},"2035":{"ds":22.4393,"uroky":0.8393,"jistina":21.6},"2036":{"ds":5.4442,"uroky":0.0442,"jistina":5.4}},"200M_15":{"2026":{"ds":17.8151,"uroky":7.9151,"jistina":9.9},"2027":{"ds":22.0624,"uroky":8.8624,"jistina":13.2},"2028":{"ds":21.4267,"uroky":8.2267,"jistina":13.2},"2029":{"ds":20.8125,"uroky":7.6125,"jistina":13.2},"2030":{"ds":20.1553,"uroky":6.9553,"jistina":13.2},"2031":{"ds":19.5196,"uroky":6.3196,"jistina":13.2},"2032":{"ds":18.9456,"uroky":5.7456,"jistina":13.2},"2033":{"ds":18.3464,"uroky":5.1464,"jistina":13.2},"2034":{"ds":17.6985,"uroky":4.4985,"jistina":13.2},"2035":{"ds":17.0506,"uroky":3.8506,"jistina":13.2},"2036":{"ds":16.4027,"uroky":3.2027,"jistina":13.2},"2037":{"ds":15.7548,"uroky":2.5548,"jistina":13.2},"2038":{"ds":15.1069,"uroky":1.9069,"jistina":13.2},"2039":{"ds":14.459,"uroky":1.259,"jistina":13.2},"2040":{"ds":15.1939,"uroky":0.5939,"jistina":14.6},"2041":{"ds":3.9319,"uroky":0.0319,"jistina":3.9}},"200M_20":{"2026":{"ds":15.1587,"uroky":7.9587,"jistina":7.2},"2027":{"ds":18.6723,"uroky":9.0723,"jistina":9.6},"2028":{"ds":18.21,"uroky":8.61,"jistina":9.6},"2029":{"ds":17.7704,"uroky":8.1704,"jistina":9.6},"2030":{"ds":17.2853,"uroky":7.6853,"jistina":9.6},"2031":{"ds":16.823,"uroky":7.223,"jistina":9.6},"2032":{"ds":16.4343,"uroky":6.8343,"jistina":9.6},"2033":{"ds":16.0201,"uroky":6.4201,"jistina":9.6},"2034":{"ds":15.5489,"uroky":5.9489,"jistina":9.6},"2035":{"ds":15.0777,"uroky":5.4777,"jistina":9.6},"2036":{"ds":14.6065,"uroky":5.0065,"jistina":9.6},"2037":{"ds":14.2353,"uroky":4.5353,"jistina":9.7},"2038":{"ds":14.8322,"uroky":4.0322,"jistina":10.8},"2039":{"ds":14.3021,"uroky":3.5021,"jistina":10.8},"2040":{"ds":13.772,"uroky":2.972,"jistina":10.8},"2041":{"ds":12.3419,"uroky":2.4419,"jistina":9.9},"2042":{"ds":12.7118,"uroky":1.9118,"jistina":10.8},"2043":{"ds":12.1817,"uroky":1.3817,"jistina":10.8},"2044":{"ds":11.6516,"uroky":0.8516,"jistina":10.8},"2045":{"ds":11.1215,"uroky":0.3215,"jistina":10.8},"2046":{"ds":1.6029,"uroky":0.0029,"jistina":1.6}},"300M_10":{"2026":{"ds":33.3635,"uroky":11.7635,"jistina":21.6},"2027":{"ds":41.569,"uroky":12.769,"jistina":28.8},"2028":{"ds":40.182,"uroky":11.3819,"jistina":28.8},"2029":{"ds":38.8238,"uroky":10.0238,"jistina":28.8},"2030":{"ds":37.4079,"uroky":8.608,"jistina":28.8},"2031":{"ds":36.0209,"uroky":7.221,"jistina":28.8},"2032":{"ds":34.9967,"uroky":5.8967,"jistina":29.1},"2033":{"ds":36.8396,"uroky":4.4396,"jistina":32.4},"2034":{"ds":35.2493,"uroky":2.8493,"jistina":32.4},"2035":{"ds":33.659,"uroky":1.259,"jistina":32.4},"2036":{"ds":8.1663,"uroky":0.0663,"jistina":8.1}},"300M_15":{"2026":{"ds":26.7226,"uroky":11.8726,"jistina":14.85},"2027":{"ds":33.0936,"uroky":13.2936,"jistina":19.8},"2028":{"ds":32.1401,"uroky":12.3401,"jistina":19.8},"2029":{"ds":31.2187,"uroky":11.4187,"jistina":19.8},"2030":{"ds":30.2329,"uroky":10.4329,"jistina":19.8},"2031":{"ds":29.2794,"uroky":9.4794,"jistina":19.8},"2032":{"ds":28.4184,"uroky":8.6184,"jistina":19.8},"2033":{"ds":27.5196,"uroky":7.7196,"jistina":19.8},"2034":{"ds":26.5477,"uroky":6.7477,"jistina":19.8},"2035":{"ds":25.5759,"uroky":5.7759,"jistina":19.8},"2036":{"ds":24.604,"uroky":4.804,"jistina":19.8},"2037":{"ds":23.6322,"uroky":3.8322,"jistina":19.8},"2038":{"ds":22.6603,"uroky":2.8603,"jistina":19.8},"2039":{"ds":21.6885,"uroky":1.8885,"jistina":19.8},"2040":{"ds":22.7909,"uroky":0.8909,"jistina":21.9},"2041":{"ds":5.8979,"uroky":0.0479,"jistina":5.85}},"300M_20":{"2026":{"ds":22.738,"uroky":11.938,"jistina":10.8},"2027":{"ds":28.0084,"uroky":13.6084,"jistina":14.4},"2028":{"ds":27.3149,"uroky":12.9149,"jistina":14.4},"2029":{"ds":26.6556,"uroky":12.2556,"jistina":14.4},"2030":{"ds":25.9279,"uroky":11.5279,"jistina":14.4},"2031":{"ds":25.2344,"uroky":10.8344,"jistina":14.4},"2032":{"ds":24.6515,"uroky":10.2515,"jistina":14.4},"2033":{"ds":24.0301,"uroky":9.6302,"jistina":14.4},"2034":{"ds":23.3234,"uroky":8.9233,"jistina":14.4},"2035":{"ds":22.6166,"uroky":8.2165,"jistina":14.4},"2036":{"ds":21.9097,"uroky":7.5098,"jistina":14.4},"2037":{"ds":21.3529,"uroky":6.803,"jistina":14.55},"2038":{"ds":22.2483,"uroky":6.0483,"jistina":16.2},"2039":{"ds":21.4531,"uroky":5.2531,"jistina":16.2},"2040":{"ds":20.658,"uroky":4.458,"jistina":16.2},"2041":{"ds":18.5128,"uroky":3.6628,"jistina":14.85},"2042":{"ds":19.0677,"uroky":2.8677,"jistina":16.2},"2043":{"ds":18.2725,"uroky":2.0725,"jistina":16.2},"2044":{"ds":17.4774,"uroky":1.2774,"jistina":16.2},"2045":{"ds":16.6822,"uroky":0.4822,"jistina":16.2},"2046":{"ds":2.4043,"uroky":0.0043,"jistina":2.4}}};
+var D = {"100M_10":{"2026":{"ds":11.1212,"uroky":3.9212},"2027":{"ds":13.8563,"uroky":4.2563},"2028":{"ds":13.394,"uroky":3.794},"2029":{"ds":12.9413,"uroky":3.3413},"2030":{"ds":12.4693,"uroky":2.8693},"2031":{"ds":12.007,"uroky":2.407},"2032":{"ds":11.6655,"uroky":1.9655},"2033":{"ds":12.2799,"uroky":1.4799},"2034":{"ds":11.7498,"uroky":0.9498},"2035":{"ds":11.2197,"uroky":0.4197},"2036":{"ds":2.7221,"uroky":0.0221}},"100M_15":{"2026":{"ds":8.9075,"uroky":3.9575},"2027":{"ds":11.0312,"uroky":4.4312},"2028":{"ds":10.7134,"uroky":4.1134},"2029":{"ds":10.4062,"uroky":3.8062},"2030":{"ds":10.0776,"uroky":3.4776},"2031":{"ds":9.7598,"uroky":3.1598},"2032":{"ds":9.4728,"uroky":2.8728},"2033":{"ds":9.1732,"uroky":2.5732},"2034":{"ds":8.8492,"uroky":2.2492},"2035":{"ds":8.5253,"uroky":1.9253},"2036":{"ds":8.2013,"uroky":1.6013},"2037":{"ds":7.8774,"uroky":1.2774},"2038":{"ds":7.5534,"uroky":0.9534},"2039":{"ds":7.2295,"uroky":0.6295},"2040":{"ds":7.597,"uroky":0.297},"2041":{"ds":1.966,"uroky":0.016}},"100M_20":{"2026":{"ds":7.5793,"uroky":3.9793},"2027":{"ds":9.3361,"uroky":4.5361},"2028":{"ds":9.105,"uroky":4.305},"2029":{"ds":8.8852,"uroky":4.0852},"2030":{"ds":8.6426,"uroky":3.8426},"2031":{"ds":8.4115,"uroky":3.6115},"2032":{"ds":8.2172,"uroky":3.4171},"2033":{"ds":8.01,"uroky":3.21},"2034":{"ds":7.7744,"uroky":2.9745},"2035":{"ds":7.5389,"uroky":2.7388},"2036":{"ds":7.3033,"uroky":2.5032},"2037":{"ds":7.1177,"uroky":2.2677},"2038":{"ds":7.4161,"uroky":2.0161},"2039":{"ds":7.151,"uroky":1.751},"2040":{"ds":6.886,"uroky":1.486},"2041":{"ds":6.1709,"uroky":1.2209},"2042":{"ds":6.3559,"uroky":0.9559},"2043":{"ds":6.0908,"uroky":0.6908},"2044":{"ds":5.8258,"uroky":0.4258},"2045":{"ds":5.5607,"uroky":0.1607},"2046":{"ds":0.8014,"uroky":0.0014}},"200M_10":{"2026":{"ds":22.2424,"uroky":7.8424},"2027":{"ds":27.7126,"uroky":8.5126},"2028":{"ds":26.788,"uroky":7.588},"2029":{"ds":25.8825,"uroky":6.6825},"2030":{"ds":24.9386,"uroky":5.7386},"2031":{"ds":24.014,"uroky":4.814},"2032":{"ds":23.3311,"uroky":3.9311},"2033":{"ds":24.5597,"uroky":2.9597},"2034":{"ds":23.4995,"uroky":1.8995},"2035":{"ds":22.4393,"uroky":0.8393},"2036":{"ds":5.4442,"uroky":0.0442}},"200M_15":{"2026":{"ds":17.8151,"uroky":7.9151},"2027":{"ds":22.0624,"uroky":8.8624},"2028":{"ds":21.4267,"uroky":8.2267},"2029":{"ds":20.8125,"uroky":7.6125},"2030":{"ds":20.1553,"uroky":6.9553},"2031":{"ds":19.5196,"uroky":6.3196},"2032":{"ds":18.9456,"uroky":5.7456},"2033":{"ds":18.3464,"uroky":5.1464},"2034":{"ds":17.6985,"uroky":4.4985},"2035":{"ds":17.0506,"uroky":3.8506},"2036":{"ds":16.4027,"uroky":3.2027},"2037":{"ds":15.7548,"uroky":2.5548},"2038":{"ds":15.1069,"uroky":1.9069},"2039":{"ds":14.459,"uroky":1.259},"2040":{"ds":15.1939,"uroky":0.5939},"2041":{"ds":3.9319,"uroky":0.0319}},"200M_20":{"2026":{"ds":15.1587,"uroky":7.9587},"2027":{"ds":18.6723,"uroky":9.0723},"2028":{"ds":18.21,"uroky":8.61},"2029":{"ds":17.7704,"uroky":8.1704},"2030":{"ds":17.2853,"uroky":7.6853},"2031":{"ds":16.823,"uroky":7.223},"2032":{"ds":16.4343,"uroky":6.8343},"2033":{"ds":16.0201,"uroky":6.4201},"2034":{"ds":15.5489,"uroky":5.9489},"2035":{"ds":15.0777,"uroky":5.4777},"2036":{"ds":14.6065,"uroky":5.0065},"2037":{"ds":14.2353,"uroky":4.5353},"2038":{"ds":14.8322,"uroky":4.0322},"2039":{"ds":14.3021,"uroky":3.5021},"2040":{"ds":13.772,"uroky":2.972},"2041":{"ds":12.3419,"uroky":2.4419},"2042":{"ds":12.7118,"uroky":1.9118},"2043":{"ds":12.1817,"uroky":1.3817},"2044":{"ds":11.6516,"uroky":0.8516},"2045":{"ds":11.1215,"uroky":0.3215},"2046":{"ds":1.6029,"uroky":0.0029}},"300M_10":{"2026":{"ds":33.3635,"uroky":11.7635},"2027":{"ds":41.569,"uroky":12.769},"2028":{"ds":40.182,"uroky":11.3819},"2029":{"ds":38.8238,"uroky":10.0238},"2030":{"ds":37.4079,"uroky":8.608},"2031":{"ds":36.0209,"uroky":7.221},"2032":{"ds":34.9967,"uroky":5.8967},"2033":{"ds":36.8396,"uroky":4.4396},"2034":{"ds":35.2493,"uroky":2.8493},"2035":{"ds":33.659,"uroky":1.259},"2036":{"ds":8.1663,"uroky":0.0663}},"300M_15":{"2026":{"ds":26.7226,"uroky":11.8726},"2027":{"ds":33.0936,"uroky":13.2936},"2028":{"ds":32.1401,"uroky":12.3401},"2029":{"ds":31.2187,"uroky":11.4187},"2030":{"ds":30.2329,"uroky":10.4329},"2031":{"ds":29.2794,"uroky":9.4794},"2032":{"ds":28.4184,"uroky":8.6184},"2033":{"ds":27.5196,"uroky":7.7196},"2034":{"ds":26.5477,"uroky":6.7477},"2035":{"ds":25.5759,"uroky":5.7759},"2036":{"ds":24.604,"uroky":4.804},"2037":{"ds":23.6322,"uroky":3.8322},"2038":{"ds":22.6603,"uroky":2.8603},"2039":{"ds":21.6885,"uroky":1.8885},"2040":{"ds":22.7909,"uroky":0.8909},"2041":{"ds":5.8979,"uroky":0.0479}},"300M_20":{"2026":{"ds":22.738,"uroky":11.938},"2027":{"ds":28.0084,"uroky":13.6084},"2028":{"ds":27.3149,"uroky":12.9149},"2029":{"ds":26.6556,"uroky":12.2556},"2030":{"ds":25.9279,"uroky":11.5279},"2031":{"ds":25.2344,"uroky":10.8344},"2032":{"ds":24.6515,"uroky":10.2515},"2033":{"ds":24.0301,"uroky":9.6302},"2034":{"ds":23.3234,"uroky":8.9233},"2035":{"ds":22.6166,"uroky":8.2165},"2036":{"ds":21.9097,"uroky":7.5098},"2037":{"ds":21.3529,"uroky":6.803},"2038":{"ds":22.2483,"uroky":6.0483},"2039":{"ds":21.4531,"uroky":5.2531},"2040":{"ds":20.658,"uroky":4.458},"2041":{"ds":18.5128,"uroky":3.6628},"2042":{"ds":19.0677,"uroky":2.8677},"2043":{"ds":18.2725,"uroky":2.0725},"2044":{"ds":17.4774,"uroky":1.2774},"2045":{"ds":16.6822,"uroky":0.4822},"2046":{"ds":2.4043,"uroky":0.0043}}};
 
 var YRS=[2026,2027,2028,2029,2030,2031,2032,2033,2034,2035,2036,2037,2038,2039,2040,2041,2042,2043,2044,2045,2046];
 var AS=[100,200,300], DS=[10,15,20];
@@ -471,15 +386,14 @@ function calc(amt,dur){
     for(var i=0;i<YRS.length;i++){
         var r=interp(amt,dur,YRS[i]);
         if(r.ds>mx)mx=r.ds;
-        td+=r.ds;tu+=r.uroky;
+        td+=r.ds; tu+=r.uroky;
     }
     return{maxDs:mx,totalDs:td,totalUroky:tu};
 }
 
 function render(){
     var max=parseFloat(document.getElementById('slider').value);
-    document.getElementById('bigVal').innerHTML=max.toFixed(1)+'<small>mil. Kč / rok</small>';
-    document.getElementById('trackFill').style.width=((max-5)/45*100)+'%';
+    document.getElementById('bigVal').innerHTML=max.toFixed(1)+'<span>mil. Kč / rok</span>';
 
     var cols=[];
     for(var d=10;d<=20;d++){
@@ -490,54 +404,59 @@ function render(){
         }
         if(best) cols.push(best);
     }
-    cols.sort(function(x,y){return y.a-x.a||x.d-y.d;});
+    cols.sort(function(x,y){return x.d-y.d;});
 
     document.getElementById('sCount').textContent=cols.length||'—';
     if(cols.length){
-        document.getElementById('sAmt').textContent=cols[0].a;
-        document.getElementById('sAmtSub').textContent=cols[0].d+' let splatnost';
-        document.getElementById('sDur').textContent=Math.min.apply(null,cols.map(function(x){return x.d;}));
-        document.getElementById('sInt').textContent=Math.min.apply(null,cols.map(function(x){return x.totalUroky;})).toFixed(1);
+        document.getElementById('sAmt').textContent=cols[0].a+' mil.';
+        document.getElementById('sDur').textContent=Math.min.apply(null,cols.map(function(x){return x.d;}))+' let';
+        document.getElementById('sInt').textContent=Math.min.apply(null,cols.map(function(x){return x.totalUroky;})).toFixed(1)+' mil.';
     } else {
         ['sAmt','sDur','sInt'].forEach(function(id){document.getElementById(id).textContent='—';});
-        document.getElementById('sAmtSub').textContent='mil. Kč';
     }
-    document.getElementById('toolbarInfo').textContent=cols.length+' variant · hodnoty v mil. Kč';
+    document.getElementById('tableTitle').textContent='Přehled variant — roční splátky v mil. Kč · '+cols.length+' variant';
 
     var c=document.getElementById('tbl');
     if(!cols.length){c.innerHTML='<div class="empty">Žádná varianta nesplňuje podmínky.</div>';return;}
 
     var h='<table><thead><tr><th>Rok</th>';
     cols.forEach(function(s,i){
-        var best=i===0;
-        h+='<th><div class="col-inner'+(best?' is-best':'')+'">';
-        h+='<span class="col-name">'+s.a+'M</span>';
-        h+='<span class="col-dur">'+s.d+' let</span>';
-        h+='<span class="col-tag tag-max">max '+s.maxDs.toFixed(2)+'M</span><br>';
-        h+='<span class="col-tag tag-int">úroky '+s.totalUroky.toFixed(1)+'M</span>';
-        h+='</div></th>';
+        var best=i===0?' col-best':'';
+        h+='<th class="'+best+'">';
+        h+='<span class="th-amount">'+s.a+'M</span>';
+        h+='<span class="th-dur">'+s.d+' let</span>';
+        h+='</th>';
     });
+    h+='</tr>';
     h+='</tr></thead><tbody>';
+    h+='<tr style="background:#f8f5ff"><td style="font-size:0.82rem;text-transform:uppercase;letter-spacing:0.05em;color:#7d3c98;font-weight:800">Celkem úroky</td>';
+    cols.forEach(function(s,i){
+        var bc=i===0?' col-best':'';
+        h+='<td class="'+bc+'" style="color:#7d3c98;font-weight:700;font-size:1.2rem">'+s.totalUroky.toFixed(1)+'</td>';
+    });
+    h+='</tr>';
 
     YRS.forEach(function(yr){
         h+='<tr><td>'+yr+'</td>';
         cols.forEach(function(s,i){
             var r=interp(s.a,s.d,yr);
-            var best=i===0?' is-best':'';
+            var bc=i===0?' col-best':'';
             var vc,vt;
             if(r.ds===0){vc='v-zero';vt='·';}
             else if(r.ds>=max*0.95){vc='v-high';vt=r.ds.toFixed(2);}
             else{vc='v-normal';vt=r.ds.toFixed(2);}
-            h+='<td class="'+best+'"><span class="'+vc+'">'+vt+'</span></td>';
+            h+='<td class="'+bc+'"><span class="'+vc+'">'+vt+'</span></td>';
         });
         h+='</tr>';
     });
 
-    [['Celkem DS','totalDs','c-blue'],['Celkem úroky','totalUroky','c-red'],['Jistina','a','c-green']].forEach(function(row){
-        h+='<tr class="sum"><td>'+row[0]+'</td>';
+    h+='<tr class="sum-divider"><td colspan="'+(cols.length+1)+'"></td></tr>';
+
+    [['Celkem DS','totalDs','sum-total'],['Celkem úroky','totalUroky','sum-uroky'],['Jistina','a','sum-jistina']].forEach(function(row){
+        h+='<tr class="sum-row"><td>'+row[0]+'</td>';
         cols.forEach(function(s,i){
             var v=row[1]==='a'?s.a.toFixed(0):(s[row[1]]).toFixed(1);
-            h+='<td'+(i===0?' class="is-best"':'')+'><span class="'+row[2]+'">'+v+'</span></td>';
+            h+='<td'+(i===0?' class="col-best"':'')+'><span class="'+row[2]+'">'+v+'</span></td>';
         });
         h+='</tr>';
     });
@@ -551,3 +470,4 @@ render();
 </script>
 </body>
 </html>
+```
